@@ -9,22 +9,42 @@ from bot.utils import send_long_message
 from bot.messages import TEXT_WATERMARK
 from bot.decorators import require_quota
 from bot.keyboards.inline import get_smart_edit_keyboard
+from db.repositories.group import check_and_mark_expiration_notification
 def register_group_voice_handlers(bot: TeleBot):
-    
-    # ==========================================
-    # ۱. حالت خودکار (خواندن خودکار تمام ویس‌ها)
-    # ==========================================
     # ==========================================
     # ۱. حالت خودکار (خواندن خودکار تمام ویس‌ها)
     # ==========================================
     @bot.message_handler(content_types=['voice', 'audio', 'video_note'], func=lambda m: m.chat.type in ['group', 'supergroup'])
     def auto_group_voice_handler(message: Message):
         chat_id = message.chat.id
-        
-        # اگر گروه در ۳ روز تست یا اشتراک ویژه نباشد، ربات هیچ واکنشی نشان نمی‌دهد
         if not is_group_auto_active(chat_id):
+            if check_and_mark_expiration_notification(chat_id):
+                
+                bot_username = bot.get_me().username
+                buy_url = f"https://t.me/{bot_username}?start=groupsub_{chat_id}"
+                
+                markup = InlineKeyboardMarkup()
+                markup.add(InlineKeyboardButton("خرید اشتراک ویژه برای این گروه 💎", url=buy_url))
+                
+                expiration_msg = (
+                    "⚠️ **پایان مهلت تست رایگان گروه**\n\n"
+                    "کاربران عزیز، مهلت ۳ روزه تست رایگان و تبدیل *خودکار* ویس‌ها در این گروه به پایان رسید.\n\n"
+                    "💡 **آیا می‌دانستید؟**\n"
+                    "شما همچنان می‌توانید با استفاده از سهمیه شخصی خودتان، ویس‌ها را به صورت دستی تبدیل کنید! (کافیست روی ویس مورد نظر ریپلای کرده و دستور `/text` را بفرستید).\n\n"
+                    "👑 مدیران یا اعضای گروه می‌توانند با تهیه اشتراک ویژه، قابلیت تبدیل خودکار و بی‌نهایت را برای **تمام اعضای گروه** مجدداً فعال کنند:"
+                )
+                
+                try:
+                    bot.send_message(
+                        chat_id=chat_id, 
+                        text=expiration_msg, 
+                        parse_mode="Markdown", 
+                        reply_markup=markup
+                    )
+                except Exception as e:
+                    print(f"Error sending expiration notice to {chat_id}: {e}")
+                    
             return
-            
         # ارسال پیام موقت برای اینکه اعضا بدانند ربات در حال کار است
         temp_msg = bot.reply_to(message, "⏳ در حال دانلود و تبدیل به متن...")
         

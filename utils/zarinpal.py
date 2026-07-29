@@ -1,7 +1,7 @@
 import requests
 
 MERCHANT_ID = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" # کد مرچنت زرین‌پال
-CALLBACK_URL = "https://vyoel-5-202-36-16.run.pinggy-free.link"
+CALLBACK_URL = "https://sedayarai.ir"
 
 def send_request(amount, description, user_id, plan_id):
     data = {

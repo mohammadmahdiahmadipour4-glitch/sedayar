@@ -19,6 +19,7 @@ def register_group(chat_id: int, title: str, added_by: int = None):
                 is_active=True,
                 trial_active=True,
                 trial_end_date=trial_end
+                # ستون expiration_notified به صورت خودکار False تنظیم می‌شود
             )
             session.add(group)
             session.commit()
@@ -75,3 +76,19 @@ def deactivate_group(chat_id: int):
         if group:
             group.is_active = False
             session.commit()
+
+def check_and_mark_expiration_notification(chat_id: int) -> bool:
+    """
+    بررسی می‌کند که آیا پیام انقضای تست رایگان برای این گروه ارسال شده است یا خیر.
+    اگر ارسال نشده بود، وضعیت را تغییر داده و True برمی‌گرداند تا پیام ارسال شود.
+    """
+    with SessionLocal() as session:
+        group = session.query(Group).filter(Group.chat_id == chat_id).first()
+        
+        # اگر گروه در دیتابیس وجود داشت و هنوز پیام انقضا نگرفته بود
+        if group and not group.expiration_notified:
+            group.expiration_notified = True
+            session.commit()
+            return True # مجوز ارسال پیام صادر شد
+            
+        return False # قبلاً پیام داده شده یا گروه اصلاً وجود ندارد

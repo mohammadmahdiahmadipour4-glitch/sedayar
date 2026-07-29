@@ -1,6 +1,7 @@
 from telebot import TeleBot
 from db.base import SessionLocal
 from db.models.user import User
+from db.models.group import Group
 import os
 import datetime
 import time
@@ -21,6 +22,7 @@ def register_admin_handlers(bot: TeleBot):
             "دستورات موجود:\n"
             "• /users - 📋 مشاهده لیست کاربران\n"
             "• /premium [آیدی] - ⭐ ارتقا به کاربر ویژه\n"
+            "• /premiumgroup [آیدی گروه] - 💎 ارتقا به گروه ویژه\n"
             "• /stats - 📊 آمار لحظه‌ای ربات\n"
             "• /backup - 📁 دریافت فایل دیتابیس\n"
             "• /broadcast [پیام] - 📢 ارسال پیام همگانی\n"
@@ -51,6 +53,7 @@ def register_admin_handlers(bot: TeleBot):
                 text = text[:4000] + "\n...(لیست طولانی است)"
                 
             bot.reply_to(message, text, parse_mode="HTML")
+            
     @bot.message_handler(commands=['premium'])
     def make_user_premium(message):
         if message.from_user.id != ADMIN_ID:
@@ -75,8 +78,51 @@ def register_admin_handlers(bot: TeleBot):
                 return
                 
             user.is_premium = True
+            
+            # Setting the premium expiration date to 30 days from now
+            now = datetime.datetime.now()
+            if user.premium_until and user.premium_until > now:
+                 user.premium_until = user.premium_until + datetime.timedelta(days=30)
+            else:
+                 user.premium_until = now + datetime.timedelta(days=30)
+
             session.commit()
-            bot.reply_to(message, f"✅ کاربر با آیدی `{target_id}` با موفقیت به اکانت **ویژه (Premium)** ارتقا یافت.", parse_mode="Markdown")
+            bot.reply_to(message, f"✅ کاربر با آیدی `{target_id}` با موفقیت به اکانت **ویژه (Premium)** برای یک ماه ارتقا یافت.", parse_mode="Markdown")
+
+    @bot.message_handler(commands=['premiumgroup'])
+    def make_group_premium(message):
+        if message.from_user.id != ADMIN_ID:
+            bot.send_message(chat_id=message.chat.id , text="دسترسی غیر مجاز ❌")
+            return
+            
+        parts = message.text.split()
+        if len(parts) < 2:
+            bot.reply_to(message, "❌ لطفاً آیدی عددی گروه را وارد کنید.\nمثال: `/premiumgroup -100123456789`", parse_mode="Markdown")
+            return
+            
+        try:
+            target_id = int(parts[1])
+        except ValueError:
+            bot.reply_to(message, "❌ آیدی گروه باید فقط شامل عدد (و علامت منفی در صورت نیاز) باشد.")
+            return
+            
+        with SessionLocal() as session:
+            group = session.query(Group).filter(Group.chat_id == target_id).first()
+            if not group:
+                bot.reply_to(message, "❌ گروهی با این آیدی در دیتابیس پیدا نشد.")
+                return
+                
+            group.is_premium = True
+            
+            now = datetime.datetime.now()
+            if group.premium_until and group.premium_until > now:
+                 group.premium_until = group.premium_until + datetime.timedelta(days=30)
+            else:
+                 group.premium_until = now + datetime.timedelta(days=30)
+                 
+            session.commit()
+            bot.reply_to(message, f"✅ گروه با آیدی `{target_id}` با موفقیت به **گروه ویژه (Premium)** برای یک ماه ارتقا یافت.", parse_mode="Markdown")
+
 
     @bot.message_handler(commands=['stats'])
     def show_stats(message):

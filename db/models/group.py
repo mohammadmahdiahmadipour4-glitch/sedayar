@@ -23,3 +23,4 @@ class Group(Base):
     # --- سیستم اشتراک ویژه (حالت خودکار دائمی) ---
     is_premium = Column(Boolean, default=False)
     premium_until = Column(DateTime, nullable=True)
+    expiration_notified = Column(Boolean , default= False)
