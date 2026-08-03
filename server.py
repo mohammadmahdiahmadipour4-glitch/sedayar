@@ -4,11 +4,12 @@ from db.base import SessionLocal
 from db.models.user import User
 from db.models.group import Group
 from datetime import datetime, timedelta
-from telebot import telebot, TeleBot
+from telebot import telebot
 import os
 from utils.logger import log_event
 import threading
 from telebot.types import Update
+from db.models.queue import UpdateQueue
 app = Flask(__name__)
 bot = telebot.TeleBot(token=os.getenv("TELEGRAM_BOT_TOKEN"))
 
@@ -32,12 +33,11 @@ def register_webhook_route(bot):
     def webhook_receiver():
         if request.headers.get('content-type') == 'application/json':
             json_string = request.get_data().decode('utf-8')
-            update = Update.de_json(json_string)
-            
-            # ارسال پردازش به پس‌زمینه (Thread) برای جلوگیری از Timeout روی هاست‌های اشتراکی
-            threading.Thread(target=bot.process_new_updates, args=([update],)).start()
-            
-            # بازگرداندن پاسخ موفقیت در کسری از ثانیه به تلگرام
+
+            with SessionLocal() as session: 
+                new_update = UpdateQueue(update_json=json_string)
+                session.add(new_update)
+                session.commit()
             return "OK", 200
         
         return "Forbidden", 403
