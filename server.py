@@ -11,7 +11,6 @@ import threading
 from telebot.types import Update
 from db.models.queue import UpdateQueue
 app = Flask(__name__)
-bot = telebot.TeleBot(token=os.getenv("TELEGRAM_BOT_TOKEN"))
 
 # تعریف بسته‌های اشتراک (برای کاربر و گروه)
 PLANS = {
@@ -139,6 +138,3 @@ def verify():
 
     else:
         return f"❌ تراکنش ناموفق بود: {ref_id}"
-
-def run_server():
-    app.run(host="0.0.0.0", port=5000)
