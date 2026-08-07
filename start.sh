@@ -1,6 +1,6 @@
 #!/bin/bash
-# اجرای ورکر در پس‌زمینه
-python worker.py &
+# استفاده از فلگ -u برای جلوگیری از بافر شدن خروجی
+python -u worker.py &
 
 # اجرای وب‌سرور در پیش‌زمینه
 gunicorn main:app
