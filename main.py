@@ -17,7 +17,7 @@ from server import app , register_webhook_route
 import time
 import threading
 
-DOMAIN_URL = "https://sedayarai.ir"
+DOMAIN_URL = "https://sedayar.onrender.com"
 
 bot = create_bot()
 init_db()
@@ -34,6 +34,11 @@ register_group_events_handlers(bot)
 register_group_voice_handlers(bot) 
 register_webhook_route(bot)
 
+bot.remove_webhook()
+time.sleep(1) # یک مکث کوتاه برای جلوگیری از خطای تلگرام
+webhook_url = f"{DOMAIN_URL}/webhook/{bot.token}"
+bot.set_webhook(url=webhook_url)
+print(f"✅ Webhook is automatically set to: {webhook_url}")
 log_event(bot, 'info', "🚀 ربات صدایار با موفقیت روشن شد و آماده به کار است.", send_to_telegram=True)
 print("🤖 Sedayar Bot is running...")
 # bot.infinity_polling()
