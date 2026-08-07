@@ -33,12 +33,15 @@ register_referral_handlers(bot)
 register_group_events_handlers(bot)
 register_group_voice_handlers(bot) 
 register_webhook_route(bot)
-
-bot.remove_webhook()
-time.sleep(1) # یک مکث کوتاه برای جلوگیری از خطای تلگرام
-webhook_url = f"{DOMAIN_URL}/webhook/{bot.token}"
-bot.set_webhook(url=webhook_url)
-print(f"✅ Webhook is automatically set to: {webhook_url}")
+try:
+    bot.remove_webhook()
+    time.sleep(1) # یک مکث کوتاه برای جلوگیری از خطای تلگرام
+    webhook_url = f"{DOMAIN_URL}/webhook/{bot.token}"
+    bot.set_webhook(url=webhook_url)
+    print(f"✅ Webhook is automatically set to: {webhook_url}")
+except Exception as e:
+    # اگر تلگرام ارور 429 بدهد، برنامه کرش نمی‌کند و فقط این پیام چاپ می‌شود
+    print(f"⚠️ Webhook setup skipped (Already set or Rate Limited): {e}")
 log_event(bot, 'info', "🚀 ربات صدایار با موفقیت روشن شد و آماده به کار است.", send_to_telegram=True)
 print("🤖 Sedayar Bot is running...")
 # bot.infinity_polling()
