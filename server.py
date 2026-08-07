@@ -11,7 +11,7 @@ import threading
 from telebot.types import Update
 from db.models.queue import UpdateQueue
 app = Flask(__name__)
-
+global_bot = None
 # تعریف بسته‌های اشتراک (برای کاربر و گروه)
 PLANS = {
     # پلن‌های اکانت شخصی
@@ -28,6 +28,8 @@ def register_webhook_route(bot):
     این تابع رباتِ کانفیگ‌شده را می‌گیرد و مسیر وب‌هوک را برای آن روی سرور Flask می‌سازد.
     استفاده از توکن در مسیر URL امنیت وب‌هوک را تضمین می‌کند.
     """
+    global global_bot
+    global_bot = bot
     @app.route(f'/webhook/{bot.token}', methods=['POST'])
     def webhook_receiver():
         if request.headers.get('content-type') == 'application/json':
@@ -133,7 +135,7 @@ def verify():
                         f"💳 کد پیگیری بانکی: `{ref_id}`\n\n"
                         f"اکانت شما اکنون ویژه است. ممنون از حمایت شما ❤️"
                     )
-                    bot.send_message(user_id, success_msg, parse_mode="Markdown")
+                    global_bot.send_message(user_id, success_msg, parse_mode="Markdown")
                     return f"✅ پرداخت موفق! کد پیگیری: {ref_id}. می‌توانید این صفحه را ببندید و به تلگرام برگردید."
 
     else:
