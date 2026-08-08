@@ -34,7 +34,8 @@ def register_webhook_route(bot):
     def webhook_receiver():
         if request.headers.get('content-type') == 'application/json':
             json_string = request.get_data().decode('utf-8')
-
+            print("--- TELEGRAM JSON ---")
+            print(json_string)
             with SessionLocal() as session: 
                 new_update = UpdateQueue(update_json=json_string)
                 session.add(new_update)
