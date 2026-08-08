@@ -72,9 +72,9 @@ def register_start_handler(bot: TeleBot):
                     
                     # در اینجا لینک درگاه پرداخت مستقیم یا ارجاع به کارت‌به‌کارت قرار می‌گیرد
                     # فعلاً یک دکمه شیشه‌ای (Callback) می‌سازیم تا بعداً هندلش کنیم
-                    markup.add(InlineKeyboardButton("اشتراک 1 ماهه گروهی💎 : 399,000  تومان💳", url=f"{SERVER_URL}/pay/{user_id}/_group_1_{target_group_id}"))
-                    markup.add(InlineKeyboardButton("اشتراک 3 ماهه گروهی💎 : 990,000  تومان💳", url=f"{SERVER_URL}/pay/{user_id}/_group_3_{target_group_id}"))
-                    markup.add(InlineKeyboardButton("اشتراک 6 ماهه گروهی💎 : 1,790,000  تومان💳", url=f"{SERVER_URL}/pay/{user_id}/_group_6_{target_group_id}"))
+                    markup.add(InlineKeyboardButton("اشتراک 1 ماهه گروهی💎 : 399,000  تومان💳", callback_data=f"pre_group_{target_group_id}_1"))
+                    markup.add(InlineKeyboardButton("اشتراک 3 ماهه گروهی💎 : 990,000  تومان💳", callback_data=f"pre_group_{target_group_id}_3"))
+                    markup.add(InlineKeyboardButton("اشتراک 6 ماهه گروهی💎 : 1,790,000  تومان💳", callback_data=f"pre_group_{target_group_id}_6"))
                     invoice_text = (
                         "🏢 **تمدید اشتراک گروه**\n\n"
                         f"شما در حال خرید اشتراک ویژه (تبدیل خودکار و نامحدود ویس‌ها) برای گروه **«{group_name}»** هستید.\n\n"
