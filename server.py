@@ -139,3 +139,6 @@ def register_webhook_route(bot):
 
 #     else:
 #         return f"❌ تراکنش ناموفق بود: {ref_id}"
+@app.route('/')
+def home():
+    return "@sedayarbot is alive!", 200
