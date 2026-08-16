@@ -132,16 +132,25 @@ def register_video_handlers(bot: TeleBot):
                 
             elif call.data == "vid_text":
                 bot.edit_message_text(
-                    text="⏳ در حال تبدیل صوت به متن (ممکن است کمی زمان‌بر باشد)...",
+                    text="⏳ در حال آماده‌سازی و ارسال فایل صوتی...",
                     chat_id=chat_id,
                     message_id=call.message.message_id
                 )
-                bot.send_chat_action(chat_id, 'typing')
+                bot.send_chat_action(chat_id, 'upload_audio')
                 
+                with open(audio_path, "rb") as audio:
+                
+                    bot.send_audio(
+                        chat_id=chat_id, 
+                        audio=audio, 
+                        caption="🎧 فایل صوتی استخراج شده از ویدیو\n" + CAPTION_WATERMARK, 
+                        timeout=120,
+                        reply_markup=get_transcribe_voice_keyboard()
+                    )
                 transcription = transcribe_audio(audio_path, user_lang)
                 
                 bot.delete_message(chat_id, call.message.message_id)
-                full_text = f"📝 **متن استخراج شده از ویدیو:**\n\n{transcription}"
+                full_text = f"📝 **متن استخراج شده از ویدیو:**\n\n{transcription} " + TEXT_WATERMARK
                 send_long_message(bot, chat_id, full_text, reply_markup=get_smart_edit_keyboard())
                 
         except Exception as e:
