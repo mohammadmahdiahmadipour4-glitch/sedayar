@@ -28,7 +28,7 @@ def register_video_handlers(bot: TeleBot):
         )
 
     # تغییر به callback_query_handler برای دریافت دیتای دکمه‌های شیشه‌ای
-    @bot.callback_query_handler(func=lambda call: call.data.startswith('vid_'))
+    @bot.callback_query_handler(func=lambda call: call.data.startswith('vlang_'))
     def lang_selector(call): 
         chat_id = call.message.chat.id
         actual_lang = call.data.replace('vlang_', '')
