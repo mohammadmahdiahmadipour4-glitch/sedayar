@@ -24,14 +24,14 @@ def register_video_handlers(bot: TeleBot):
         bot.send_message(
             message.chat.id, 
             "لطفا زبان ویدیو خود را انتخاب کنید ! \n در تشخیص خودکار ممکن است دقت پایین تر باشد!", 
-            reply_markup=lang("vid")
+            reply_markup=lang("vlang")
         )
 
     # تغییر به callback_query_handler برای دریافت دیتای دکمه‌های شیشه‌ای
     @bot.callback_query_handler(func=lambda call: call.data.startswith('vid_'))
     def lang_selector(call): 
         chat_id = call.message.chat.id
-        actual_lang = call.data.replace('vid_', '')
+        actual_lang = call.data.replace('vlang_', '')
         # ذخیره زبان اختصاصی کاربر در دیکشنری موقت
         user_selected_langs[chat_id] = actual_lang 
         
