@@ -20,17 +20,17 @@ def register_voice_handlers(bot: TeleBot):
         bot.send_message(
             message.chat.id, 
             "لطفا زبان فایل صوتی خود را انتخاب کنید ! \n در تشخیص خودکار ممکن است دقت پایین تر باشد!", 
-            reply_markup=lang() 
+            reply_markup=lang('voc') 
         )
 
     # اصلاح: تغییر به callback_query_handler برای پشتیبانی از کیبورد شیشه‌ای
-    @bot.callback_query_handler(func=lambda call: call.data in ["fa" , "en" , "Auto_detector"])
+    @bot.callback_query_handler(func=lambda call: call.data.startswith('voc_'))
     def lang_selector(call): 
         chat_id = call.message.chat.id
         
         # ذخیره زبان اختصاصی برای همین کاربر
-        user_selected_langs[chat_id] = call.data 
-        
+        actual_lang = call.data.replace('voc_', '')
+        user_selected_langs[chat_id] = actual_lang
         bot.answer_callback_query(call.id)
         
         # ویرایش پیام قبلی و حذف کیبورد
