@@ -164,7 +164,7 @@ def register_video_handlers(bot: TeleBot):
                 os.remove(audio_path)
                 
             # پاک کردن زبان از مموری به محض اتمام پردازش 
-            if chat_id in user_selected_langs:
+            if call.data == "vid_text" and chat_id in user_selected_langs:
                 del user_selected_langs[chat_id]
 
     @bot.callback_query_handler(func=lambda call: call.data == "transcribe_sent_voice")
@@ -211,3 +211,5 @@ def register_video_handlers(bot: TeleBot):
         finally:
             if file_path and os.path.exists(file_path):
                 delete_local_file(file_path)
+            if chat_id in user_selected_langs:
+                del user_selected_langs[chat_id]
