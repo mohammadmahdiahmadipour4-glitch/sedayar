@@ -41,3 +41,5 @@ def lang() :
     fa = InlineKeyboardButton(text="فارسی" , callback_data="fa" , style="success")
     en = InlineKeyboardButton(text= "English" , callback_data="en" , style="danger")
     auto = InlineKeyboardButton(text="تشخیص خودکار"  , callback_data="Auto_detector" , style="primary")
+    markup.add(fa , en , auto) 
+    return markup
