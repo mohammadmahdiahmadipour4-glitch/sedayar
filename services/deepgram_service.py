@@ -2,7 +2,7 @@ from deepgram import DeepgramClient
 # فرض می‌کنیم فایل api_switcher رو در پوشه utils ساختی
 from utils.api_switcher import api_manager 
 
-def transcribe_audio(file_path: str) -> str:
+def transcribe_audio(file_path: str  , language: str) -> str:
     """
     Sends the downloaded Telegram voice file to Deepgram API (Nova-3 Model) 
     using the official SDK and Auto-API Key Rotation.
@@ -24,11 +24,19 @@ def transcribe_audio(file_path: str) -> str:
             # ۲. مقداردهی کلاینت دیپ‌گرام با این کلید
             deepgram = DeepgramClient(api_key=current_key)
 
+            if language == "Auto_detctor" : 
+                response = deepgram.listen.v1.media.transcribe_file(
+                                request=audio_data,
+                                model="nova-3",
+                                detect_language= True,
+                                smart_format=True
+                            )
+
             # ۳. ارسال فایل به مدل Nova-3
             response = deepgram.listen.v1.media.transcribe_file(
                 request=audio_data,
                 model="nova-3",
-                language="fa",
+                language=language,
                 smart_format=True
             )
             

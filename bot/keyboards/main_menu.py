@@ -7,12 +7,12 @@ def get_main_menu() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     
     keyboard.add(
-        KeyboardButton(VOICE_TO_TEXT),
-        KeyboardButton(TEXT_TO_SPEECH)
+        KeyboardButton(VOICE_TO_TEXT , style="primary"),
+        KeyboardButton(TEXT_TO_SPEECH , style="primary")
     )
     
     keyboard.add(
-        KeyboardButton(VIDEO_TO_TEXT)
+        KeyboardButton(VIDEO_TO_TEXT , style="primary")
     )
     
     keyboard.add(
@@ -21,7 +21,7 @@ def get_main_menu() -> ReplyKeyboardMarkup:
     )
     keyboard.add(
         KeyboardButton(SUPPORT) , 
-        KeyboardButton(REFRAL_MESSAGE)
+        KeyboardButton(REFRAL_MESSAGE, style="success")
     )
    
     

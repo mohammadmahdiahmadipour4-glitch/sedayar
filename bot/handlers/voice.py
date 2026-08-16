@@ -4,15 +4,21 @@ from bot.messages import VOICE_TO_TEXT
 from services.telegram_files import download_telegram_file, delete_local_file
 from services.deepgram_service import transcribe_audio
 from services.text_processor import improve_text
-from bot.keyboards.inline import get_smart_edit_keyboard
+from bot.keyboards.inline import get_smart_edit_keyboard , lang
 from bot.utils import send_long_message
 from bot.decorators import require_quota
 from bot.messages import TEXT_WATERMARK , CAPTION_WATERMARK
 def register_voice_handlers(bot: TeleBot):
     
     @bot.message_handler(func=lambda message: message.text == VOICE_TO_TEXT and message.chat.type == 'private' )
-    def ask_for_voice(message):
-        msg = bot.reply_to(message, "🎤 لطفاً فایل صوتی (Voice) خود را ارسال کنید:")
+    def ask_for_lang(message):
+        bot.send_message(message, "لطفا زبان فایل صوتی خود را انتخاب کنید ! \n  در تشخیص خودکار ممکن است دقت پایین تر باشد!" , reply_markup= lang() )
+
+    @bot.message_handler(func= lambda call : call.text in ["fa" , "en" , "Auto_detector"])
+    def lang_selector(call): 
+        global selected_lang
+        selected_lang = call.text 
+        msg = "🎤 لطفاً فایل صوتی (Voice) خود را ارسال کنید:"
         bot.register_next_step_handler(msg, handle_voice_message)
 
     @bot.message_handler(content_types=['voice', 'audio'] , func=lambda m: m.chat.type == 'private')
@@ -39,7 +45,7 @@ def register_voice_handlers(bot: TeleBot):
                 text="✅ فایل دانلود شد.\n🤖 در حال پردازش صوت توسط هوش مصنوعی ..."
             )
             
-            transcription = transcribe_audio(file_path)
+            transcription = transcribe_audio(file_path , selected_lang)
             
             bot.delete_message(message.chat.id, processing_msg.message_id)
             

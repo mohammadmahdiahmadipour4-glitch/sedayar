@@ -7,7 +7,8 @@ from services.deepgram_service import transcribe_audio
 from bot.keyboards.inline import (
     get_video_choice_keyboard, 
     get_smart_edit_keyboard, 
-    get_transcribe_voice_keyboard
+    get_transcribe_voice_keyboard,
+    lang
 )
 from bot.utils import send_long_message
 from bot.decorators import require_quota
@@ -18,9 +19,16 @@ user_temp_audios = {}
 def register_video_handlers(bot: TeleBot):
     
     @bot.message_handler(func=lambda message: message.text == VIDEO_TO_TEXT)
-    def ask_for_video(message):
-        msg = bot.reply_to(message, "🎬 لطفاً ویدیو یا فایل ویدیویی خود را بفرستید:")
+    def ask_for_lang(message):
+        bot.send_message(message, "لطفا زبان ویدیو خود را انتخاب کنید ! \n  در تشخیص خودکار ممکن است دقت پایین تر باشد!" , reply_markup= lang() )
+
+    @bot.message_handler(func= lambda call : call.text in ["fa" , "en" , "Auto_detector"])
+    def lang_selector(call): 
+        global selected_lang
+        selected_lang = call.text 
+        msg = "🎬 لطفاً ویدیو یا فایل ویدیویی خود را بفرستید:"
         bot.register_next_step_handler(msg, process_video_message)
+
     @require_quota(bot)
     def process_video_message(message):
         file_path = None
@@ -111,7 +119,7 @@ def register_video_handlers(bot: TeleBot):
                 )
                 bot.send_chat_action(chat_id, 'typing')
                 
-                transcription = transcribe_audio(audio_path)
+                transcription = transcribe_audio(audio_path , selected_lang)
                 
                 bot.delete_message(chat_id, call.message.message_id)
                 full_text = f"📝 **متن استخراج شده از ویدیو:**\n\n{transcription}"
@@ -158,7 +166,7 @@ def register_video_handlers(bot: TeleBot):
                 bot.send_message(chat_id, "❌ خطا در دانلود فایل.")
                 return
                 
-            transcription = transcribe_audio(file_path)
+            transcription = transcribe_audio(file_path , selected_lang)
             
             bot.delete_message(chat_id, processing_msg.message_id)
             full_text = f"📝 **متن استخراج شده:**\n\n{transcription}" + TEXT_WATERMARK

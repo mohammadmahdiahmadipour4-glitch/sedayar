@@ -32,6 +32,12 @@ def get_transcribe_voice_keyboard():
 def premium_upgrade_keyboard():
     markup = InlineKeyboardMarkup()
     
-    btn = InlineKeyboardButton("💎 خرید اشتراک ویژه", callback_data="buy_premium")
+    btn = InlineKeyboardButton("💎 خرید اشتراک ویژه", callback_data="buy_premium" , style="Primary")
     markup.add(btn)
     return markup
+
+def lang() : 
+    markup = InlineKeyboardMarkup() 
+    fa = InlineKeyboardButton(text="فارسی" , callback_data="fa" , style="success")
+    en = InlineKeyboardButton(text= "English" , callback_data="en" , style="danger")
+    auto = InlineKeyboardButton(text="تشخیص خودکار"  , callback_data="Auto_detector" , style="primary")
