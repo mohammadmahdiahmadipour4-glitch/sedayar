@@ -214,13 +214,6 @@ python main.py
 
 ---
 
-## 🧪 Tests
-
-```bash
-pytest
-```
-
----
 
 ## 📄 License
 
